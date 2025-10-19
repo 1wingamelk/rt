@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'down1.jpg'    // Путь к изображению "вниз"
     ];
 
-    const COOLDOWN_SECONDS = 5;
+    const COOLDOWN_SECONDS = 12;
     let isInitialClick = true;
 
     function startCooldown() {
