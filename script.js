@@ -3,33 +3,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const trendImageContainer = document.getElementById('trendImageContainer');
     const trendImage = document.getElementById('trendImage');
     const retroTradeButton = document.getElementById('retroTradeButton');
+    const cooldownIndicator = document.getElementById('cooldownIndicator');
+    const cooldownTimerDisplay = document.getElementById('cooldownTimer');
 
     const trendImages = [
         'up1.jpg.png', // Путь к изображению "вверх"
         'down1.jpg'    // Путь к изображению "вниз"
     ];
 
-    startButton.addEventListener('click', () => {
-        // 1. Изменение кнопки START
-        startButton.classList.remove('start-button');
-        startButton.classList.add('start-button-clicked');
-        startButton.textContent = 'START'; // Текст остается прежним, если нужно
-        
-        // 2. Появление нижней кнопки
-        retroTradeButton.classList.remove('hidden');
+    const COOLDOWN_SECONDS = 5;
+    let isInitialClick = true;
 
-        // 3. Появление либо down1.jpg, либо up1.jpg
-        // Выбираем случайное изображение
+    function startCooldown() {
+        startButton.disabled = true;
+        cooldownIndicator.classList.remove('hidden');
+        let timer = COOLDOWN_SECONDS;
+        cooldownTimerDisplay.textContent = timer;
+
+        const interval = setInterval(() => {
+            timer--;
+            cooldownTimerDisplay.textContent = timer;
+
+            if (timer <= 0) {
+                clearInterval(interval);
+                startButton.disabled = false;
+                cooldownIndicator.classList.add('hidden');
+            }
+        }, 1000);
+    }
+
+    function handleStartClick() {
+        if (startButton.disabled) {
+            return; 
+        }
+
+        // 1. Изменение стилей кнопки при первом клике
+        if (isInitialClick) {
+            startButton.classList.remove('start-button');
+            startButton.classList.add('start-button-active');
+            retroTradeButton.classList.remove('hidden');
+            isInitialClick = false;
+        }
+
+        // 2. Рандомное изображение
         const randomIndex = Math.floor(Math.random() * trendImages.length);
         const selectedImage = trendImages[randomIndex];
         
         trendImage.src = selectedImage;
         trendImageContainer.classList.remove('hidden');
 
-        // 4. Опционально: Отключение кнопки START после первого нажатия
-        // startButton.disabled = true;
+        // 3. Запуск кулдауна
+        startCooldown();
+    }
 
-        // Если нужно, чтобы кнопка START больше не была кликабельной, 
-        // можно удалить обработчик или установить startButton.disabled = true;
-    }, { once: true }); // { once: true } гарантирует, что событие сработает только один раз
+    startButton.addEventListener('click', handleStartClick);
 });
